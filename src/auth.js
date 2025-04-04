@@ -1,28 +1,39 @@
-import { auth } from './firebase-config.js';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// src/auth.js
 
-export async function signup(email, password) {
+const signUp = async (email, password) => {
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    return { success: true };
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-}
+    const response = await fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyABiceNcqi4onUflikpg0vkA1sNpW-wzmU",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          returnSecureToken: true,
+        }),
+      }
+    );
 
-export async function login(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    return { success: true };
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-}
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error.message); // Logs Firebase error messages
+    }
 
-export function logout() {
-  signOut(auth);
-}
+    console.log("User Signed Up:", data);
+    alert("Signup successful! Please log in.");
+  } catch (error) {
+    console.error("Signup Error:", error.message);
+    alert("Signup Failed: " + error.message); // Show user-friendly error message
+  }
+};
+
+// Event Listener for Signup Button
+document.getElementById("signupBtn").addEventListener("click", () => {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  
+  signUp(email, password);
+});
+
