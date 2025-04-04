@@ -1,39 +1,32 @@
-// src/auth.js
+// ✅ Import Firebase Auth functions
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { app } from './firebase-config.js';
 
-const signUp = async (email, password) => {
-  try {
-    const response = await fetch(
-      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyABiceNcqi4onUflikpg0vkA1sNpW-wzmU",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }),
-      }
-    );
+// ✅ Initialize Firebase Auth
+const auth = getAuth(app);
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.error.message); // Logs Firebase error messages
-    }
-
-    console.log("User Signed Up:", data);
-    alert("Signup successful! Please log in.");
-  } catch (error) {
-    console.error("Signup Error:", error.message);
-    alert("Signup Failed: " + error.message); // Show user-friendly error message
-  }
+// 🔐 Login function
+export const login = (email, password) => {
+  return signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      console.log("✅ Login successful:", userCredential.user);
+      return userCredential.user;
+    })
+    .catch(error => {
+      console.error("❌ Login failed:", error.message);
+      throw error;
+    });
 };
 
-// Event Listener for Signup Button
-document.getElementById("signupBtn").addEventListener("click", () => {
-  const email = document.getElementById("authEmail").value;
-  const password = document.getElementById("authPassword").value;
-  
-  signUp(email, password);
-});
-
+// ✨ Signup function
+export const signup = (email, password) => {
+  return createUserWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      console.log("✅ Signup successful:", userCredential.user);
+      return userCredential.user;
+    })
+    .catch(error => {
+      console.error("❌ Signup failed:", error.message);
+      throw error;
+    });
+};
