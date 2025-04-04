@@ -1,32 +1,28 @@
-// ✅ Import Firebase Auth functions
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { app } from './firebase-config.js';
+import { auth } from './firebase-config.js';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// ✅ Initialize Firebase Auth
-const auth = getAuth(app);
+export async function signup(email, password) {
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
 
-// 🔐 Login function
-export const login = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      console.log("✅ Login successful:", userCredential.user);
-      return userCredential.user;
-    })
-    .catch(error => {
-      console.error("❌ Login failed:", error.message);
-      throw error;
-    });
-};
+export async function login(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
 
-// ✨ Signup function
-export const signup = (email, password) => {
-  return createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      console.log("✅ Signup successful:", userCredential.user);
-      return userCredential.user;
-    })
-    .catch(error => {
-      console.error("❌ Signup failed:", error.message);
-      throw error;
-    });
-};
+export function logout() {
+  signOut(auth);
+}
